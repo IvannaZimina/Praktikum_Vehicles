@@ -45,6 +45,20 @@ As required, the solution is split into two separate parts:
 
 ---
 
+## View
+<img width="698" height="439" alt="image" src="https://github.com/user-attachments/assets/9702fac0-ee7a-46da-a768-feb451eb6a16" />
+<img width="698" height="442" alt="image" src="https://github.com/user-attachments/assets/d775595b-f6b3-4320-8e8e-83ce92083d21" />
+<img width="698" height="468" alt="image" src="https://github.com/user-attachments/assets/2d2fb23e-6cce-4aff-99da-6b5aca4b017c" />
+<img width="694" height="437" alt="image" src="https://github.com/user-attachments/assets/e0b4eead-3792-4232-ad8d-7be42cec76a4" />
+<img width="698" height="440" alt="image" src="https://github.com/user-attachments/assets/086ce80f-a0d2-4f95-9a67-daa0867348f5" />
+<img width="699" height="440" alt="image" src="https://github.com/user-attachments/assets/df403266-9406-4078-be8f-6182e6819f54" />
+
+
+
+
+
+
+
 ## How to Run
 1. Open the solution file (`.sln`) in Visual Studio.
 2. Set `Vehicles.WpfApp` as the startup project.
