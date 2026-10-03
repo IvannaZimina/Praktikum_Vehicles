@@ -3,7 +3,7 @@ using Vehicles.Core.Interfaces;
 
 namespace Vehicles.Core
 {
-    // Car inherits from Vehicle (gets Make, Model, Odometer) and implements IDriveable (represents the driving role)
+    // Car inherits from Vehicle and implements IDriveable
     public class Car : Vehicle, IDriveable
     {
         // Constructor accepting make, model, and optional initial odometer (defaults to 0)
@@ -11,20 +11,22 @@ namespace Vehicles.Core
         {
         }
 
-        // Implementation of the abstract Move method from Vehicle
-        public override string Move(double km)
+        // Implementation of IDriveable interface method
+        public string Drive(double km)
         {
-            // Validation: mileage cannot be changed with invalid input (km must be greater than 0)
             if (km <= 0)
             {
                 throw new ArgumentException("Distance must be greater than zero.");
             }
 
-            // Increase the odometer
             Odometer += km;
-
-            // Return a status message about the car's trip
             return $"Car {Make} {Model} drove {km} km. Total odometer: {Odometer} km.";
+        }
+
+        // Implementation of the abstract Move method from Vehicle (delegates to Drive)
+        public override string Move(double km)
+        {
+            return Drive(km);
         }
     }
 }

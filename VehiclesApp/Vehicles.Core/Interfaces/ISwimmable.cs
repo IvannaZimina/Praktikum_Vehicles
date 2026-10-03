@@ -2,6 +2,6 @@
 {
     public interface ISwimmable
     {
-        string Move(double km);
+        string Swim(double km);
     }
 }

@@ -13,20 +13,34 @@ namespace Vehicles.Core
         {
         }
 
-        // Implementation of the abstract Move method from Vehicle
-        public override string Move(double km)
+        // Implementation of IDriveable interface method
+        public string Drive(double km)
         {
-            // Validation: distance must be greater than zero
             if (km <= 0)
             {
                 throw new ArgumentException("Distance must be greater than zero.");
             }
 
-            // Increase the odometer
             Odometer += km;
+            return $"Amphibious Car {Make} {Model} drove {km} km on land. Total odometer: {Odometer} km.";
+        }
 
-            // Return a status message for an amphibious vehicle
-            return $"Amphibious Car {Make} {Model} traveled {km} km (by land and water). Total odometer: {Odometer} km.";
+        // Implementation of ISwimmable interface method
+        public string Swim(double km)
+        {
+            if (km <= 0)
+            {
+                throw new ArgumentException("Distance must be greater than zero.");
+            }
+
+            Odometer += km;
+            return $"Amphibious Car {Make} {Model} swam {km} km in water. Total odometer: {Odometer} km.";
+        }
+
+        // Implementation of the abstract Move method from Vehicle (defaults to driving on land)
+        public override string Move(double km)
+        {
+            return Drive(km);
         }
     }
 }
