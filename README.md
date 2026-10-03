@@ -52,6 +52,8 @@ As required, the solution is split into two separate parts:
 <img width="694" height="437" alt="image" src="https://github.com/user-attachments/assets/e0b4eead-3792-4232-ad8d-7be42cec76a4" />
 <img width="698" height="440" alt="image" src="https://github.com/user-attachments/assets/086ce80f-a0d2-4f95-9a67-daa0867348f5" />
 <img width="699" height="440" alt="image" src="https://github.com/user-attachments/assets/df403266-9406-4078-be8f-6182e6819f54" />
+<img width="703" height="434" alt="image" src="https://github.com/user-attachments/assets/8f127a56-6dcb-46ec-a84e-8ac36e92b600" />
+<img width="695" height="437" alt="image" src="https://github.com/user-attachments/assets/f33c814b-c630-4ba9-95ab-51d3425858cb" />
 
 
 
