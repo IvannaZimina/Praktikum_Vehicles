@@ -15,22 +15,33 @@ namespace Vehicles.Core
         // Odometer (mileage) — readable from the outside, but can only be modified from within the classes
         public double Odometer { get; protected set; }
 
-        // Base class constructor with validation (checking input data)
-        protected Vehicle(string make, string model)
+        // Base class constructor with validation (checking input data) and optional initial odometer
+        protected Vehicle(string make, string model, double odometer = 0)
         {
             if (string.IsNullOrWhiteSpace(make) || string.IsNullOrWhiteSpace(model))
             {
                 throw new ArgumentException("Make and model cannot be empty.");
             }
 
+            if (odometer < 0)
+            {
+                throw new ArgumentException("Odometer cannot be negative.");
+            }
+
             Make = make.Trim();
             Model = model.Trim();
-            Odometer = 0; // Initial mileage is set to 0
+            Odometer = odometer; // Initial or pre-existing mileage
         }
 
         // abstract method Move — a polymorphic method. 
         // It has no body here because each specific vehicle (car, boat) 
         // will implement its own movement logic using 'override'.
         public abstract string Move(double km);
+
+        // Override ToString to nicely display vehicle info in the UI ListBox
+        public override string ToString()
+        {
+            return $"{Make} {Model} ({Odometer} km)";
+        }
     }
 }

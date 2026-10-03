@@ -6,8 +6,8 @@ namespace Vehicles.Core
     // Boat inherits from Vehicle and implements ISwimmable (represents the swimming/water role)
     public class Boat : Vehicle, ISwimmable
     {
-        // Constructor passing make and model to the base Vehicle class
-        public Boat(string make, string model) : base(make, model)
+        // Constructor accepting make, model, and optional initial odometer (defaults to 0)
+        public Boat(string make, string model, double odometer = 0) : base(make, model, odometer)
         {
         }
 
