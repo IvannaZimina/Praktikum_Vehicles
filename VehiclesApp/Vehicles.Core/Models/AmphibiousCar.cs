@@ -2,7 +2,7 @@
 using Vehicles.Core.Interfaces;
 using Vehicles.Core.Resources;
 
-namespace Vehicles.Core
+namespace Vehicles.Core.Models
 {
     // Multiple interfaces: C# doesn't allow multiple class inheritance (no 'class X : Car, Boat'), 
     // but a class can implement as many interfaces as needed.

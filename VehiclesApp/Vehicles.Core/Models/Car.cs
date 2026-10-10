@@ -2,7 +2,7 @@
 using Vehicles.Core.Interfaces;
 using Vehicles.Core.Resources;
 
-namespace Vehicles.Core
+namespace Vehicles.Core.Models
 {
     // Car inherits from Vehicle and implements IDriveable
     public class Car : Vehicle, IDriveable

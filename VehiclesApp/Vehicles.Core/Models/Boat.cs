@@ -2,7 +2,7 @@
 using Vehicles.Core.Interfaces;
 using Vehicles.Core.Resources;
 
-namespace Vehicles.Core
+namespace Vehicles.Core.Models
 {
     // Boat inherits from Vehicle and implements ISwimmable
     public class Boat : Vehicle, ISwimmable
