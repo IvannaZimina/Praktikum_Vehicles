@@ -28,20 +28,27 @@ As required, the solution is split into two separate parts:
 
 ### 3. Encapsulation and Validation
 - **Assignment requirement**: Zero, negative, or invalid input must not break the object state.
-- **Why we did it**: Inside the `Move(double km)` method, we check if the distance is greater than zero. If the input is invalid, it throws an exception and the odometer does not change.
+- **Why we did it**: Inside movement methods, we check if the distance is greater than zero. If the input is invalid, it throws an exception and the odometer does not change.
 
-### 4. Single Collection (`ObservableCollection<Vehicle>`)
-- **Assignment requirement**: All objects must be in one `ObservableCollection<Vehicle>` collection.
-- **Why we did it**: We store cars, boats, and amphibious cars together in one list, which makes it easy to display them in the WPF user interface.
+### 4. Multiple Garage Collections (`VehicleGarage`)
+- **Assignment requirement**: Manage vehicles grouped in separate specialized structures/garages.
+- **Why we did it**: We implemented two independent `VehicleGarage` instances (`CarGarage` and `BoatGarage`) managing separate `ObservableCollection<Vehicle>` lists for cars and boats.
 
-### 5. Modern WPF User Interface & Dynamic Interaction (`Vehicles.WpfApp`)
-- **UI Design**: Built with a sleek, modern **Dark Theme** featuring deep slate/indigo gradients, rounded containers (`CornerRadius`), and smooth visual hierarchy.
+### 5. Event-Driven Notifications & Visual Feedback
+- **Assignment requirement**: Automated event-driven behaviors (honking on arrival, flashing headlights on removal) backed by clear activity log records.
+- **Why we did it**: 
+  - When a vehicle is added to a garage, existing vehicles automatically "honk" (logged via `OnLogMessage`).
+  - When a vehicle is removed from a garage, remaining vehicles automatically trigger headlight flashing.
+  - **Visual Indicator Animation**: Each vehicle in the UI lists features interactive headlight elements (`Ellipse`) that dynamically light up in bright yellow for 2 seconds whenever a vehicle leaves the garage.
+
+### 6. Modern WPF User Interface & Dynamic Interaction (`Vehicles.WpfApp`)
+- **UI Design**: Built with a sleek, modern **Dark Theme** featuring deep slate/indigo gradients, rounded containers (`CornerRadius`), and a symmetrical 2-column layout.
+  - **Left Panel**: Top action buttons, followed by a neatly docked "Selected Vehicle" control panel and operational inputs.
+  - **Right Panel**: Side-by-side garage lists (`Car Garage` and `Boat Garage`) at the top, and a full-width bottom "Activity Log" taking up 1/3 height.
 - **Dynamic Interface-Driven Controls**: 
-  - When a vehicle is selected in the list (`VehicleListBox`), the application dynamically checks which interfaces it implements.
-  - **`IDriveable` vehicles** (like Cars and Amphibious Cars) enable the **Drive** button.
-  - **`ISwimmable` vehicles** (like Boats and Amphibious Cars) enable the **Swim** button.
-  - Non-supported actions automatically disable their respective buttons, turning them into a clean, muted state with visual feedback.
-- **Activity Log & Validation**: All actions (driving, sailing, errors, or removals) are recorded in real-time in the scrollable activity log box with input error handling.
+  - When a vehicle is selected, the application dynamically checks implemented interfaces.
+  - `IDriveable` vehicles enable the **Drive** button; `ISwimmable` vehicles enable the **Swim** button.
+  - Non-supported actions automatically disable their respective buttons with visual feedback.
 
 ---
 
