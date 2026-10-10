@@ -45,6 +45,13 @@ As required, the solution is split into two separate parts:
 
 ---
 
+## How to Run
+1. Open the solution file (`.sln`) in Visual Studio.
+2. Set `Vehicles.WpfApp` as the startup project.
+3. Build and run the application (`F5`).
+
+---
+
 ## View
 <img width="698" height="439" alt="image" src="https://github.com/user-attachments/assets/9702fac0-ee7a-46da-a768-feb451eb6a16" />
 <img width="698" height="442" alt="image" src="https://github.com/user-attachments/assets/d775595b-f6b3-4320-8e8e-83ce92083d21" />
@@ -54,14 +61,3 @@ As required, the solution is split into two separate parts:
 <img width="699" height="440" alt="image" src="https://github.com/user-attachments/assets/df403266-9406-4078-be8f-6182e6819f54" />
 <img width="703" height="434" alt="image" src="https://github.com/user-attachments/assets/8f127a56-6dcb-46ec-a84e-8ac36e92b600" />
 <img width="695" height="437" alt="image" src="https://github.com/user-attachments/assets/f33c814b-c630-4ba9-95ab-51d3425858cb" />
-
-
-
-
-
-
-
-## How to Run
-1. Open the solution file (`.sln`) in Visual Studio.
-2. Set `Vehicles.WpfApp` as the startup project.
-3. Build and run the application (`F5`).
