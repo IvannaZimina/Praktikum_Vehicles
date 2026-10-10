@@ -124,6 +124,24 @@ namespace Vehicles.Core.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} {1} flashes headlights as {2} {3} left!.
+        /// </summary>
+        public static string Log_VehicleFlashes {
+            get {
+                return ResourceManager.GetString("Log_VehicleFlashes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} {1} honks as {2} {3} arrives!.
+        /// </summary>
+        public static string Log_VehicleHonks {
+            get {
+                return ResourceManager.GetString("Log_VehicleHonks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Validation Error.
         /// </summary>
         public static string UI_Error_ValidationTitle {

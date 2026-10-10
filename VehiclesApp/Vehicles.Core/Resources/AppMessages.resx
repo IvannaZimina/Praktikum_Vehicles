@@ -156,4 +156,10 @@
   <data name="UI_Log_VehicleRemoved" xml:space="preserve">
     <value>Removed: {0} {1}</value>
   </data>
+  <data name="Log_VehicleHonks" xml:space="preserve">
+    <value>{0} {1} honks as {2} {3} arrives!</value>
+  </data>
+  <data name="Log_VehicleFlashes" xml:space="preserve">
+    <value>{0} {1} flashes headlights as {2} {3} left!</value>
+  </data>
 </root>
