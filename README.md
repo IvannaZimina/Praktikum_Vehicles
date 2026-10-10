@@ -1,61 +1,59 @@
 # Vehicles C# WPF Application
 
 ## Project Overview
-This project is built for the **Vehicles practical assignment**. The main goal is to create a WPF application where Object-Oriented Programming (OOP) and collections work together. 
+This project is developed for the **Vehicles practical assignment**. The primary objective is to implement a WPF application integrating Object-Oriented Programming (OOP) principles with collection management.
 
 ---
 
 ## Project Structure & Architecture
-As required, the solution is split into two separate parts:
-1. **Vehicles.Core**: Contains all classes, business logic, rules, and validation. It does not know anything about WPF and can be tested separately.
-2. **Vehicles.WpfApp**: The user interface (UI) responsible for input, events, and displaying results. It uses the Core project.
+The solution adheres to a strict separation of concerns utilizing the **MVVM (Model-View-ViewModel)** architectural pattern:
+
+1. **Vehicles.Core**: Contains all domain classes, interfaces, business logic, rules, and validation. This layer remains completely independent of the user interface and supports isolated unit testing.
+2. **Vehicles.WpfApp.ViewModels**: Contains `MainViewModel` implementing `INotifyPropertyChanged`. This layer manages application state, garage collections, data binding properties, and action execution without directly referencing UI elements.
+3. **Vehicles.WpfApp**: The user interface (**View**) constructed with XAML and code-behind. MVVM and data binding implementation keeps the code-behind minimal, restricting its responsibility strictly to visual elements and animations.
 
 ---
 
 ## Key OOP Concepts (Based on Assignment Requirements)
 
 ### 1. Abstract Base Class and Polymorphism (`Vehicle`)
-- **Assignment requirement**: Show inheritance, polymorphism, and an abstract `Vehicle` class.
-- **Why we did it**: The `Vehicle` class is abstract so you cannot create it directly. It holds shared properties (`Make`, `Model`, `Odometer`) which are read-only from the outside. 
-- It also has an abstract method `Move(double km)`, which works polymorphically in all child classes.
+- **Assignment requirement**: Demonstrate inheritance, polymorphism, and an abstract `Vehicle` class.
+- **Implementation details**: The `Vehicle` class is defined as abstract to prevent direct instantiation. It exposes shared read-only properties (`Make`, `Model`, `Odometer`) and declares an abstract method `Move(double km)` implemented polymorphically across all derived classes.
 
 ### 2. Role-Based Interfaces (`IDriveable` & `ISwimmable`)
-- **Assignment requirement**: Use at least two different interfaces. `Car` and `Boat` implement different roles, while `AmphibiousCar` supports both.
-- **Why we did it**: Instead of a strict hierarchy, we use interfaces for specific roles:
-  - `IDriveable`: For vehicles that drive (implemented by `Car`).
-  - `ISwimmable`: For watercraft (implemented by `Boat`).
-  - `AmphibiousCar`: Implements **both** interfaces because it can both drive and swim.
+- **Assignment requirement**: Implement at least two distinct interfaces. `Car` and `Boat` represent separate behavioral roles, while `AmphibiousCar` supports both.
+- **Implementation details**: Role-based interfaces decouple behavior from rigid inheritance hierarchies:
+  - `IDriveable`: Designed for land-based vehicles (implemented by `Car`).
+  - `ISwimmable`: Designed for watercraft (implemented by `Boat`).
+  - `AmphibiousCar`: Implements both interfaces to support dual-mode operation (driving and swimming).
 
 ### 3. Encapsulation and Validation
-- **Assignment requirement**: Zero, negative, or invalid input must not break the object state.
-- **Why we did it**: Inside movement methods, we check if the distance is greater than zero. If the input is invalid, it throws an exception and the odometer does not change.
+- **Assignment requirement**: Zero, negative, or invalid input values must not corrupt object state.
+- **Implementation details**: Movement methods validate distance parameters prior to execution. Invalid inputs trigger exceptions, preventing unauthorized odometer modifications.
 
 ### 4. Multiple Garage Collections (`VehicleGarage`)
-- **Assignment requirement**: Manage vehicles grouped in separate specialized structures/garages.
-- **Why we did it**: We implemented two independent `VehicleGarage` instances (`CarGarage` and `BoatGarage`) managing separate `ObservableCollection<Vehicle>` lists for cars and boats.
+- **Assignment requirement**: Manage vehicles grouped within specialized collection structures.
+- **Implementation details**: Two independent `VehicleGarage` instances (`CarGarage` and `BoatGarage`) manage separate `ObservableCollection<Vehicle>` lists for cars and boats within the view model layer.
 
 ### 5. Event-Driven Notifications & Visual Feedback
-- **Assignment requirement**: Automated event-driven behaviors (honking on arrival, flashing headlights on removal) backed by clear activity log records.
-- **Why we did it**: 
-  - When a vehicle is added to a garage, existing vehicles automatically "honk" (logged via `OnLogMessage`).
-  - When a vehicle is removed from a garage, remaining vehicles automatically trigger headlight flashing.
-  - **Visual Indicator Animation**: Each vehicle in the UI lists features interactive headlight elements (`Ellipse`) that dynamically light up in bright yellow for 2 seconds whenever a vehicle leaves the garage.
+- **Assignment requirement**: Implement automated event-driven behaviors (such as acoustic notifications upon addition and headlight flashing upon removal) accompanied by comprehensive activity logging.
+- **Implementation details**: 
+  - Vehicle addition triggers automated notification events logged via `OnLogMessage`.
+  - Vehicle removal invokes visual headlight flashing across remaining vehicles.
+- **Visual Indicator Animation**: UI list items feature interactive headlight elements (`Ellipse`) dynamically illuminating in bright yellow for a duration of 2 seconds upon vehicle removal.
 
-### 6. Modern WPF User Interface & Dynamic Interaction (`Vehicles.WpfApp`)
-- **UI Design**: Built with a sleek, modern **Dark Theme** featuring deep slate/indigo gradients, rounded containers (`CornerRadius`), and a symmetrical 2-column layout.
-  - **Left Panel**: Top action buttons, followed by a neatly docked "Selected Vehicle" control panel and operational inputs.
-  - **Right Panel**: Side-by-side garage lists (`Car Garage` and `Boat Garage`) at the top, and a full-width bottom "Activity Log" taking up 1/3 height.
-- **Dynamic Interface-Driven Controls**: 
-  - When a vehicle is selected, the application dynamically checks implemented interfaces.
-  - `IDriveable` vehicles enable the **Drive** button; `ISwimmable` vehicles enable the **Swim** button.
-  - Non-supported actions automatically disable their respective buttons with visual feedback.
+### 6. Modern WPF User Interface & MVVM Dynamic Interaction (`Vehicles.WpfApp`)
+- **UI Design**: Developed using a modern **Dark Theme** featuring deep slate and indigo gradients, rounded containers (`CornerRadius`), and a symmetrical two-column layout.
+- **Left Panel**: Houses primary action buttons, followed by a structured "Selected Vehicle" control panel and operational input fields.
+- **Right Panel**: Contains side-by-side garage lists (`Car Garage` and `Boat Garage`) positioned above a full-width "Activity Log" occupying one-third of the vertical layout.
+- **Code Optimization**: Single-line methods in the code-behind leverage modern C# expression-bodied member syntax (`=>`) for clean and maintainable event delegation to the view model.
 
 ---
 
 ## How to Run
 1. Open the solution file (`.sln`) in Visual Studio.
 2. Set `Vehicles.WpfApp` as the startup project.
-3. Build and run the application (`F5`).
+3. Build and execute the application (`F5`).
 
 ---
 
