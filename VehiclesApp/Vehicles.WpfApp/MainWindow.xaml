@@ -1,9 +1,15 @@
 ﻿<Window x:Class="Vehicles.WpfApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Vehicles.WpfApp.ViewModels"
         Title="Vehicles Application" Height="580" Width="850"
         WindowStartupLocation="CenterScreen"
         Background="#0F172A" Foreground="#F8FAFC">
+
+    <!-- Connecting MainViewModel as the data context for the window -->
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
 
     <Window.Resources>
         <DataTemplate x:Key="VehicleTemplate">
@@ -122,8 +128,7 @@
                     <TextBlock x:Name="SelectedVehicleText" Text="Select a vehicle" FontSize="12" Foreground="#F8FAFC" Margin="0,0,0,4"/>
                     <TextBlock x:Name="OdometerText" Text="Odometer: 0 km" Foreground="#94A3B8" FontSize="11" Margin="0,0,0,8"/>
 
-                    <TextBox x:Name="DistanceTextBox" Text="10" VerticalContentAlignment="Center" Height="32" Margin="0,0,0,6" HorizontalAlignment="Stretch"/>
-
+                    <TextBox x:Name="DistanceTextBox" Text="{Binding DistanceText, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" Height="32" Margin="0,0,0,6" HorizontalAlignment="Stretch"/>
                     <Grid Margin="0,0,0,6">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
