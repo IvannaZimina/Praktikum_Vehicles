@@ -2,6 +2,7 @@
 using System.Windows;
 using Vehicles.Core;
 using Vehicles.Core.Interfaces;
+using Vehicles.Core.Resources;
 
 namespace Vehicles.WpfApp
 {
@@ -37,7 +38,7 @@ namespace Vehicles.WpfApp
                 SelectedVehicleText.Text = $"{selectedVehicle.Make} {selectedVehicle.Model}";
 
                 // Update the UI text block to display the current odometer reading in kilometers
-                OdometerText.Text = $"Läbisõit: {selectedVehicle.Odometer} km";
+                OdometerText.Text = string.Format(AppMessages.UI_OdometerFormat, selectedVehicle.Odometer);
 
                 // Enable or disable buttons polymorphically using interfaces (true if supported, false otherwise)
                 DriveButton.IsEnabled = selectedVehicle is IDriveable;
@@ -46,10 +47,10 @@ namespace Vehicles.WpfApp
             else // Executed when no vehicle is selected or the selection is cleared
             {
                 // Reset the title text block back to the default instruction prompt
-                SelectedVehicleText.Text = "Vali sõiduk nimekirjast";
+                SelectedVehicleText.Text = AppMessages.UI_SelectVehiclePrompt;
 
                 // Reset the odometer display text back to zero kilometers
-                OdometerText.Text = "Läbisõit: 0 km";
+                OdometerText.Text = string.Format(AppMessages.UI_OdometerFormat, 0);
 
                 // Force disable the drive button since no valid vehicle is active
                 DriveButton.IsEnabled = false;
@@ -78,7 +79,7 @@ namespace Vehicles.WpfApp
                         LogTextBox.AppendText(message + "\n");
 
                         // Refresh the odometer text display on the UI with the updated vehicle mileage
-                        OdometerText.Text = $"Läbisõit: {vehicle.Odometer} km";
+                        OdometerText.Text = string.Format(AppMessages.UI_OdometerFormat, vehicle.Odometer);
 
                         // Force the ListBox control to refresh its item presentation bindings
                         VehicleListBox.Items.Refresh();
@@ -86,13 +87,13 @@ namespace Vehicles.WpfApp
                     else // Executed if the user typed text that is not a valid number
                     {
                         // Show a warning message box alerting the user about invalid numerical input
-                        MessageBox.Show("Vigane sisend! Palun sisesta number.", "Viga", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show(AppMessages.UI_InvalidInputMessage, AppMessages.UI_ErrorTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
                 catch (System.ArgumentException ex) // Catches business logic errors (e.g., negative or zero distance)
                 {
                     // Display an error message box containing the validation exception description text
-                    MessageBox.Show(ex.Message, "Valideerimisviga", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(ex.Message, AppMessages.UI_Error_ValidationTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -116,7 +117,7 @@ namespace Vehicles.WpfApp
                         LogTextBox.AppendText(message + "\n");
 
                         // Update the odometer label text to reflect the new increased mileage value
-                        OdometerText.Text = $"Läbisõit: {vehicle.Odometer} km";
+                        OdometerText.Text = string.Format(AppMessages.UI_OdometerFormat, vehicle.Odometer);
 
                         // Refresh the visual container items inside the vehicle list box
                         VehicleListBox.Items.Refresh();
@@ -124,13 +125,13 @@ namespace Vehicles.WpfApp
                     else // Executed if string parsing into double fails
                     {
                         // Show a warning popup window prompting the user to enter a correct number format
-                        MessageBox.Show("Vigane sisend! Palun sisesta number.", "Viga", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show(AppMessages.UI_InvalidInputMessage, AppMessages.UI_ErrorTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
                 catch (System.ArgumentException ex) // Catch invalid argument exceptions coming from the core model
                 {
                     // Show a critical error message box showing why the validation failed
-                    MessageBox.Show(ex.Message, "Valideerimisviga", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(ex.Message, AppMessages.UI_Error_ValidationTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -170,7 +171,8 @@ namespace Vehicles.WpfApp
                 Vehicles.Remove(selectedVehicle);
 
                 // Write a removal confirmation entry note into the activity log text box
-                LogTextBox.AppendText($"Eemaldatud: {selectedVehicle.Make} {selectedVehicle.Model}\n");
+                string logMessage = string.Format(AppMessages.UI_Log_VehicleRemoved, selectedVehicle.Make, selectedVehicle.Model);
+                LogTextBox.AppendText(logMessage + "\n");
             }
         }
     }

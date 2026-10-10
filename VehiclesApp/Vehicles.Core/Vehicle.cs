@@ -1,4 +1,5 @@
 ﻿using System;
+using Vehicles.Core.Resources;
 
 namespace Vehicles.Core
 {
@@ -20,12 +21,12 @@ namespace Vehicles.Core
         {
             if (string.IsNullOrWhiteSpace(make) || string.IsNullOrWhiteSpace(model))
             {
-                throw new ArgumentException("Make and model cannot be empty.");
+                throw new ArgumentException(AppMessages.Error_MakeModelEmpty);
             }
 
             if (odometer < 0)
             {
-                throw new ArgumentException("Odometer cannot be negative.");
+                throw new ArgumentException(AppMessages.Error_OdometerNegative);
             }
 
             Make = make.Trim();

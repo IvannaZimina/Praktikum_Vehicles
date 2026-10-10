@@ -1,5 +1,6 @@
 ﻿using System;
 using Vehicles.Core.Interfaces;
+using Vehicles.Core.Resources;
 
 namespace Vehicles.Core
 {
@@ -18,11 +19,11 @@ namespace Vehicles.Core
         {
             if (km <= 0)
             {
-                throw new ArgumentException("Distance must be greater than zero.");
+                throw new ArgumentException(AppMessages.Error_Validation_DistanceMustBePositive);
             }
 
             Odometer += km;
-            return $"Amphibious Car {Make} {Model} drove {km} km on land. Total odometer: {Odometer} km.";
+            return string.Format(AppMessages.Log_AmphibiousDrove, Make, Model, km, Odometer);
         }
 
         // Implementation of ISwimmable interface method
@@ -30,11 +31,11 @@ namespace Vehicles.Core
         {
             if (km <= 0)
             {
-                throw new ArgumentException("Distance must be greater than zero.");
+                throw new ArgumentException(AppMessages.Error_Validation_DistanceMustBePositive);
             }
 
             Odometer += km;
-            return $"Amphibious Car {Make} {Model} swam {km} km in water. Total odometer: {Odometer} km.";
+            return string.Format(AppMessages.Log_AmphibiousSwam, Make, Model, km, Odometer);
         }
 
         // Implementation of the abstract Move method from Vehicle (defaults to driving on land)

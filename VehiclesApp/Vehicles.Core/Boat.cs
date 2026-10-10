@@ -1,5 +1,6 @@
 ﻿using System;
 using Vehicles.Core.Interfaces;
+using Vehicles.Core.Resources;
 
 namespace Vehicles.Core
 {
@@ -16,11 +17,11 @@ namespace Vehicles.Core
         {
             if (km <= 0)
             {
-                throw new ArgumentException("Distance must be greater than zero.");
+                throw new ArgumentException(AppMessages.Error_Validation_DistanceMustBePositive);
             }
 
             Odometer += km;
-            return $"Boat {Make} {Model} sailed {km} km. Total odometer: {Odometer} km.";
+            return string.Format(AppMessages.Log_BoatSailed, Make, Model, km, Odometer);
         }
 
         // Implementation of the abstract Move method from Vehicle (delegates to Swim)
