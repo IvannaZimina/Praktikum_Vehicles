@@ -1,179 +1,268 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using Vehicles.Core;
+using Vehicles.Core.Models;
 using Vehicles.Core.Interfaces;
 using Vehicles.Core.Resources;
 
 namespace Vehicles.WpfApp
 {
-    // Interaction logic class for MainWindow.xaml, inheriting from WPF Window base class
+    // Main window code
     public partial class MainWindow : Window
     {
-        // Observable collection to store all vehicles, automatically updates the UI on changes
-        public ObservableCollection<Vehicle> Vehicles { get; set; } = new();
+        // Garage for cars and amphibious cars
+        public VehicleGarage CarGarage { get; } = new();
 
-        // Constructor of the main window executed when the application starts up
+        // Garage for boats
+        public VehicleGarage BoatGarage { get; } = new();
+
+        // Saves which garage is currently selected (using VehicleGarage? to avoid null warning)
+        private VehicleGarage? activeGarage;
+
+        // Constructor - runs when the app opens
         public MainWindow()
         {
-            // Initializes and loads all visual components defined in the XAML file
             InitializeComponent();
 
-            // Bind the vehicle collection data source to the ListBox UI element
-            VehicleListBox.ItemsSource = Vehicles;
+            // Connect garages to the UI lists
+            CarGarageListBox.ItemsSource = CarGarage.Vehicles;
+            BoatGarageListBox.ItemsSource = BoatGarage.Vehicles;
 
-            // Add some initial sample data items to the collection for demonstration
-            Vehicles.Add(new Car("Volvo", "V60", 120));
-            Vehicles.Add(new Boat("Bella", "600", 50));
-            Vehicles.Add(new AmphibiousCar("Amphi", "X", 10));
+            // Listen to log messages from both garages
+            CarGarage.OnLogMessage += AppendLog;
+            BoatGarage.OnLogMessage += AppendLog;
+
+            // Add some default items on startup
+            CarGarage.AddVehicle(new Car("Volvo", "V60", 120));
+            BoatGarage.AddVehicle(new Boat("Bella", "600", 50));
+            CarGarage.AddVehicle(new AmphibiousCar("Amphi", "X", 10));
         }
 
-        // Event handler triggered whenever the user changes the selected vehicle item in the ListBox
-        // Parameters: sender (the object that raised the event), e (event arguments containing selection details)
-        private void VehicleListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        // Helper method to add text to the log box and scroll down
+        private void AppendLog(string message)
         {
-            // Check if the currently selected item in the ListBox is successfully castable to a Vehicle object
-            if (VehicleListBox.SelectedItem is Vehicle selectedVehicle)
-            {
-                // Update the UI header text block with the make and model of the selected vehicle
-                SelectedVehicleText.Text = $"{selectedVehicle.Make} {selectedVehicle.Model}";
+            LogTextBox.AppendText(message + "\n");
+            LogTextBox.ScrollToEnd();
+        }
 
-                // Update the UI text block to display the current odometer reading in kilometers
+        // Triggered when a car is clicked in the Car Garage list
+        private void CarGarageListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CarGarageListBox.SelectedItem is Vehicle selectedVehicle)
+            {
+                // Unselect item in boat list so only one car is active
+                BoatGarageListBox.SelectedItem = null;
+                activeGarage = CarGarage;
+
+                // Show selected vehicle name and odometer in UI
+                SelectedVehicleText.Text = $"{selectedVehicle.Make} {selectedVehicle.Model}";
                 OdometerText.Text = string.Format(AppMessages.UI_OdometerFormat, selectedVehicle.Odometer);
 
-                // Enable or disable buttons polymorphically using interfaces (true if supported, false otherwise)
+                // Enable buttons depending on what vehicle can do
                 DriveButton.IsEnabled = selectedVehicle is IDriveable;
                 SwimButton.IsEnabled = selectedVehicle is ISwimmable;
             }
-            else // Executed when no vehicle is selected or the selection is cleared
+            else if (BoatGarageListBox.SelectedItem == null)
             {
-                // Reset the title text block back to the default instruction prompt
-                SelectedVehicleText.Text = AppMessages.UI_SelectVehiclePrompt;
-
-                // Reset the odometer display text back to zero kilometers
-                OdometerText.Text = string.Format(AppMessages.UI_OdometerFormat, 0);
-
-                // Force disable the drive button since no valid vehicle is active
-                DriveButton.IsEnabled = false;
-
-                // Force disable the swim button since no valid vehicle is active
-                SwimButton.IsEnabled = false;
+                ResetSelection();
             }
         }
 
-        // Event handler triggered when the Drive button is clicked by the user
-        // Parameters: sender (the button clicked), e (routed event arguments)
+        // Triggered when a boat is clicked in the Boat Garage list
+        private void BoatGarageListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (BoatGarageListBox.SelectedItem is Vehicle selectedVehicle)
+            {
+                // Unselect item in car list
+                CarGarageListBox.SelectedItem = null;
+                activeGarage = BoatGarage;
+
+                // Show selected vehicle name and odometer in UI
+                SelectedVehicleText.Text = $"{selectedVehicle.Make} {selectedVehicle.Model}";
+                OdometerText.Text = string.Format(AppMessages.UI_OdometerFormat, selectedVehicle.Odometer);
+
+                // Enable buttons depending on what vehicle can do
+                DriveButton.IsEnabled = selectedVehicle is IDriveable;
+                SwimButton.IsEnabled = selectedVehicle is ISwimmable;
+            }
+            else if (CarGarageListBox.SelectedItem == null)
+            {
+                ResetSelection();
+            }
+        }
+
+        // Reset UI labels and buttons when nothing is selected
+        private void ResetSelection()
+        {
+            activeGarage = null;
+            SelectedVehicleText.Text = AppMessages.UI_SelectVehiclePrompt;
+            OdometerText.Text = string.Format(AppMessages.UI_OdometerFormat, 0);
+            DriveButton.IsEnabled = false;
+            SwimButton.IsEnabled = false;
+        }
+
+        // Triggered when Drive button is clicked
         private void DriveButton_Click(object sender, RoutedEventArgs e)
         {
-            // Verify that the selected item implements IDriveable and can also be referenced as a Vehicle
-            if (VehicleListBox.SelectedItem is IDriveable driveable && VehicleListBox.SelectedItem is Vehicle vehicle)
+            // Find selected vehicle from either car list or boat list (using Vehicle? to avoid nullable warning)
+            Vehicle? selectedVehicle = (CarGarageListBox.SelectedItem as Vehicle) ?? (BoatGarageListBox.SelectedItem as Vehicle);
+
+            if (selectedVehicle is IDriveable driveable)
             {
-                try // Start a try block to safely catch validation exceptions from the Core layer
+                try
                 {
-                    // Attempt to parse the text box input string into a valid double numeric value (distance in km)
+                    // Check if input is a valid number
                     if (double.TryParse(DistanceTextBox.Text, out double km))
                     {
-                        // Invoke the polymorphic Drive method, returning a status message string
+                        // Drive the vehicle and print message to log
                         string message = driveable.Drive(km);
+                        AppendLog(message);
 
-                        // Append the operation status message to the bottom activity log text box
-                        LogTextBox.AppendText(message + "\n");
-
-                        // Refresh the odometer text display on the UI with the updated vehicle mileage
-                        OdometerText.Text = string.Format(AppMessages.UI_OdometerFormat, vehicle.Odometer);
-
-                        // Force the ListBox control to refresh its item presentation bindings
-                        VehicleListBox.Items.Refresh();
+                        // Update odometer and refresh UI lists
+                        OdometerText.Text = string.Format(AppMessages.UI_OdometerFormat, selectedVehicle.Odometer);
+                        CarGarageListBox.Items.Refresh();
+                        BoatGarageListBox.Items.Refresh();
                     }
-                    else // Executed if the user typed text that is not a valid number
+                    else
                     {
-                        // Show a warning message box alerting the user about invalid numerical input
+                        // Show warning if input is not a number
                         MessageBox.Show(AppMessages.UI_InvalidInputMessage, AppMessages.UI_ErrorTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
-                catch (System.ArgumentException ex) // Catches business logic errors (e.g., negative or zero distance)
+                catch (System.ArgumentException ex)
                 {
-                    // Display an error message box containing the validation exception description text
+                    // Show error popup if distance is negative/zero
                     MessageBox.Show(ex.Message, AppMessages.UI_Error_ValidationTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
 
-        // Event handler triggered when the Swim button is clicked by the user
-        // Parameters: sender (the button clicked), e (routed event arguments)
+        // Triggered when Swim button is clicked
         private void SwimButton_Click(object sender, RoutedEventArgs e)
         {
-            // Verify that the selected item implements ISwimmable and can also be referenced as a Vehicle
-            if (VehicleListBox.SelectedItem is ISwimmable swimmable && VehicleListBox.SelectedItem is Vehicle vehicle)
+            // Find selected vehicle from either list (using Vehicle? to avoid nullable warning)
+            Vehicle? selectedVehicle = (CarGarageListBox.SelectedItem as Vehicle) ?? (BoatGarageListBox.SelectedItem as Vehicle);
+
+            if (selectedVehicle is ISwimmable swimmable)
             {
-                try // Start a try block to handle potential business logic exceptions safely
+                try
                 {
-                    // Attempt to parse the distance text input box value into a double type
+                    // Check if input is a valid number
                     if (double.TryParse(DistanceTextBox.Text, out double km))
                     {
-                        // Invoke the polymorphic Swim method, returning a descriptive result message string
+                        // Swim the vehicle and print message to log
                         string message = swimmable.Swim(km);
+                        AppendLog(message);
 
-                        // Append the successful swim operation log message into the activity log box
-                        LogTextBox.AppendText(message + "\n");
-
-                        // Update the odometer label text to reflect the new increased mileage value
-                        OdometerText.Text = string.Format(AppMessages.UI_OdometerFormat, vehicle.Odometer);
-
-                        // Refresh the visual container items inside the vehicle list box
-                        VehicleListBox.Items.Refresh();
+                        // Update odometer and refresh UI lists
+                        OdometerText.Text = string.Format(AppMessages.UI_OdometerFormat, selectedVehicle.Odometer);
+                        CarGarageListBox.Items.Refresh();
+                        BoatGarageListBox.Items.Refresh();
                     }
-                    else // Executed if string parsing into double fails
+                    else
                     {
-                        // Show a warning popup window prompting the user to enter a correct number format
+                        // Show warning for wrong input
                         MessageBox.Show(AppMessages.UI_InvalidInputMessage, AppMessages.UI_ErrorTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
-                catch (System.ArgumentException ex) // Catch invalid argument exceptions coming from the core model
+                catch (System.ArgumentException ex)
                 {
-                    // Show a critical error message box showing why the validation failed
+                    // Show error popup for invalid numbers
                     MessageBox.Show(ex.Message, AppMessages.UI_Error_ValidationTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
 
-        // Event handler triggered when the Add Car button is clicked
-        // Parameters: sender (the button clicked), e (routed event arguments)
+        // Add a new Toyota RAV4 car to the car garage
         private void AddCarButton_Click(object sender, RoutedEventArgs e)
         {
-            // Create a new Car instance with preset parameters and add it to the observable collection
-            Vehicles.Add(new Car("Toyota", "RAV4", 0));
+            CarGarage.AddVehicle(new Car("Toyota", "RAV4", 0));
         }
 
-        // Event handler triggered when the Add Boat button is clicked
-        // Parameters: sender (the button clicked), e (routed event arguments)
+        // Add a new Yamaha boat to the boat garage
         private void AddBoatButton_Click(object sender, RoutedEventArgs e)
         {
-            // Create a new Boat instance with preset parameters and add it to the observable collection
-            Vehicles.Add(new Boat("Yamaha", "Breeze", 0));
+            BoatGarage.AddVehicle(new Boat("Yamaha", "Breeze", 0));
         }
 
-        // Event handler triggered when the Add Amphibious Car button is clicked
-        // Parameters: sender (the button clicked), e (routed event arguments)
+        // Add a new Amphibious car to the car garage
         private void AddAmphibiousButton_Click(object sender, RoutedEventArgs e)
         {
-            // Create a new AmphibiousCar instance with preset parameters and add it to the collection
-            Vehicles.Add(new AmphibiousCar("Gibbs", "Aquada", 0));
+            CarGarage.AddVehicle(new AmphibiousCar("Gibbs", "Aquada", 0));
         }
 
-        // Event handler triggered when the Remove button is clicked to delete a vehicle
-        // Parameters: sender (the button clicked), e (routed event arguments)
+        // Remove selected vehicle from its garage
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
-            // Check if an active vehicle object is currently highlighted/selected in the list box
-            if (VehicleListBox.SelectedItem is Vehicle selectedVehicle)
+            if (activeGarage != null)
             {
-                // Remove the target vehicle object from the main observable collection
-                Vehicles.Remove(selectedVehicle);
+                Vehicle? vehicleToRemove = (CarGarageListBox.SelectedItem as Vehicle) ?? (BoatGarageListBox.SelectedItem as Vehicle);
 
-                // Write a removal confirmation entry note into the activity log text box
-                string logMessage = string.Format(AppMessages.UI_Log_VehicleRemoved, selectedVehicle.Make, selectedVehicle.Model);
-                LogTextBox.AppendText(logMessage + "\n");
+                if (vehicleToRemove != null)
+                {
+                    // Запоминаем текущий активный гараж перед удалением
+                    ListBox targetListBox = (activeGarage == CarGarage) ? CarGarageListBox : BoatGarageListBox;
+
+                    // Remove item from active garage
+                    activeGarage.RemoveVehicle(vehicleToRemove);
+
+                    // Log removal action
+                    string logMessage = string.Format(AppMessages.UI_Log_VehicleRemoved, vehicleToRemove.Make, vehicleToRemove.Model);
+                    AppendLog(logMessage);
+
+                    // Trigger visual headlight flashing for remaining vehicles
+                    FlashHeadlightsForListBox(targetListBox);
+
+                    // Clear active selection state
+                    ResetSelection();
+                }
             }
+        }
+
+        // Включаем фары желтыми на 2 секунды для всех элементов в ListBox
+        private async void FlashHeadlightsForListBox(ListBox listBox)
+        {
+            SetHeadlightsOpacity(listBox, 1.0);
+            await System.Threading.Tasks.Task.Delay(2000);
+            SetHeadlightsOpacity(listBox, 0.1);
+        }
+
+        // Set opacity for headlight ellipses inside the ListBox items
+        private void SetHeadlightsOpacity(ListBox listBox, double opacity)
+        {
+            listBox.UpdateLayout();
+
+            foreach (var item in listBox.Items)
+            {
+                var container = listBox.ItemContainerGenerator.ContainerFromItem(item) as ListBoxItem;
+                if (container != null)
+                {
+                    var headlight1 = FindVisualChild<System.Windows.Shapes.Ellipse>(container, "Headlight1");
+                    var headlight2 = FindVisualChild<System.Windows.Shapes.Ellipse>(container, "Headlight2");
+
+                    if (headlight1 != null) headlight1.Opacity = opacity;
+                    if (headlight2 != null) headlight2.Opacity = opacity;
+                }
+            }
+        }
+
+        // Find visual child element by name
+        private T? FindVisualChild<T>(DependencyObject parent, string childName) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T typedChild && (child as FrameworkElement)?.Name == childName)
+                {
+                    return typedChild;
+                }
+
+                var descendant = FindVisualChild<T>(child, childName);
+                if (descendant != null) return descendant;
+            }
+            return null;
         }
     }
 }
